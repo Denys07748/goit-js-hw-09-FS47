@@ -4,11 +4,13 @@ import 'flatpickr/dist/flatpickr.min.css';
 const refs = {
   datetime: document.querySelector('#datetime-picker'),
   start: document.querySelector('button'),
-  days: document.querySelector('span[data-days]'),
-  hours: document.querySelector('span[data-hours'),
-  minutes: document.querySelector('span[data-minutets'),
-  seconds: document.querySelector('span[data-seconds'),
+  days: document.querySelector('[data-days]'),
+  hours: document.querySelector('[data-hours'),
+  minutes: document.querySelector('[data-minutets'),
+  seconds: document.querySelector('[data-seconds'),
 };
+
+refs.start.setAttribute('disabled', true);
 
 const flatpickr = require('flatpickr');
 const options = {
@@ -18,11 +20,12 @@ const options = {
   minuteIncrement: 1,
   onClose(selectedDates) {
     console.log(selectedDates[0]);
-    if (this.defaultDate > selectedDates[0]) {
-      refs.start.setAttribute('disabled', true);
-      return alert('Please choose a date in the future');
+    if (options.defaultDate > selectedDates[0]) {
+      alert('Please choose a date in the future');
+    } else {
+      refs.start.removeAttribute('disabled');
+      refs.start.addEventListener('click', timer);
     }
-    refs.start.removeAttribute('disabled');
   },
 };
 
@@ -49,19 +52,32 @@ function convertMs(ms) {
   return { days, hours, minutes, seconds };
 }
 
-const timer = targetDate => {
-  setInterval(() => {
+function addLeadingZero(value) {
+  return value.toString().padStart(2, '0');
+}
+
+let timerId = null;
+
+function timer(targetDate) {
+  timerId = setInterval(() => {
     const delta = new Date(targetDate) - new Date();
 
-    renderTimer(delta);
+    renderTimer(convertMs(delta));
   }, 1000);
-};
 
-refs.start.addEventListener('click', timer);
+  if ((refs.start.disabled = false)) {
+    clearInterval(timerId);
+  }
 
-const renderTimer = delta => {
-  refs.days.innerText = delta;
-  //   refs.hours.innerText = hours;
-  //   refs.minutes.innerText = minutes;
-  //   refs.seconds.innerText = seconds;
-};
+  refs.start.setAttribute('disabled', true);
+}
+
+// refs.start.addEventListener('click', timer);
+console.log(number.days);
+
+function renderTimer(number) {
+  refs.days.textContent = addLeadingZero(number.days);
+  refs.hours.textContent = addLeadingZero(number.hours);
+  refs.minutes.textContent = addLeadingZero(number.minutes);
+  refs.seconds.textContent = addLeadingZero(number.seconds);
+}
